@@ -9,6 +9,7 @@ namespace NotificationApp.Services
         // Takes any notification type (Email/SMS/etc) and sends it
         public void SendNotification(INotification notifier, User user, Notification notification)
         {
+            // INotification Notifier - interphase implements polymorphism
             notifier.Send(user, notification);
         }
     }
