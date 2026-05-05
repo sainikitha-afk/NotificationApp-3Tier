@@ -15,20 +15,20 @@ namespace NotificationApp
 
             while (flag)
             {
-                Console.WriteLine("\n Menu");
-                Console.WriteLine("1. Create notificaiton");
-                Console.WriteLine("2. View all");
-                Console.WriteLine("3. View by specific index");
-                Console.WriteLine("4. Update");
-                Console.WriteLine("5. Delete");
-                Console.WriteLine("6. Exit");
+                Console.WriteLine("\n menu");
+                Console.WriteLine("1. create notificaiton");
+                Console.WriteLine("2. view all");
+                Console.WriteLine("3. view by specific index");
+                Console.WriteLine("4. update");
+                Console.WriteLine("5. delete");
+                Console.WriteLine("6. exit");
 
                 int ch;
 
                 //forcing valid input 
                 while (!int.TryParse(Console.ReadLine(), out ch))
                 {
-                    Console.WriteLine("Enter a valid choice:");
+                    Console.WriteLine("enter a valid choice:");
                 }
 
                 switch (ch) 
@@ -38,52 +38,52 @@ namespace NotificationApp
                         // creating user obj
                         User user = new User();
 
-                        Console.WriteLine("Enter your name:");
+                        Console.WriteLine("enter your name:");
                         user.Name = Console.ReadLine() ?? "";
                         while (string.IsNullOrWhiteSpace(user.Name))
                         {
-                            Console.WriteLine("Invalid name, enter again.");
+                            Console.WriteLine("invalid name, enter again.");
                             user.Name = Console.ReadLine() ?? "";
                         }
 
-                        Console.WriteLine("Enter your email:");
+                        Console.WriteLine("enter your email:");
                         user.Email = Console.ReadLine() ?? "";
                         while (string.IsNullOrWhiteSpace(user.Email))
                         {
-                            Console.WriteLine("Invalid email, enter again;");
+                            Console.WriteLine("invalid email, enter again;");
                             user.Email = Console.ReadLine() ?? "";
                         }
 
-                        Console.WriteLine("Enter your phone number:");
+                        Console.WriteLine("enter your phone number:");
                         user.Phone = Console.ReadLine() ?? "";
                         while (string.IsNullOrWhiteSpace(user.Phone) || user.Phone.Length != 10 || !user.Phone.All(char.IsDigit))
                         {
-                            Console.WriteLine("Invalid ph no. Enter again:");
+                            Console.WriteLine("invalid ph no. enter again:");
                             user.Phone = Console.ReadLine() ?? "";
                         }
 
                         // create notification object
                         Notification notification = new Notification();
 
-                        Console.WriteLine("Enter message to send:");
+                        Console.WriteLine("enter message");
                         notification.Message = Console.ReadLine() ?? "";
                         while (string.IsNullOrWhiteSpace(notification.Message))
                         {
-                            Console.WriteLine("Please enter valid messsage:");
+                            Console.WriteLine("invalid message");
                             notification.Message = Console.ReadLine() ?? "";
                         }
 
                         notification.SentDate = DateTime.Now;
 
                         // to ask user how they want to receive notification
-                        Console.WriteLine("\nChoose notification type:");
-                        Console.WriteLine("1. Email");
+                        Console.WriteLine("\n chooose your notification type:");
+                        Console.WriteLine("1. email");
                         Console.WriteLine("2. SMS");
 
                         int choice;
                         while (!int.TryParse(Console.ReadLine(), out choice) || (choice != 1 && choice != 2))
                         {
-                            Console.WriteLine("Invalid choice. Enter 1 or 2:");
+                            Console.WriteLine("invalid choice, please enter 1 or 2 only.");
                         }
 
                         // create service
@@ -101,18 +101,18 @@ namespace NotificationApp
                         }
                         else {
 
-                            Console.WriteLine("Invalid Choice entered!");
+                            Console.WriteLine("invalid choice");
                             return;
                         }
 
                         // send notification
                         service.SendNotification(notifier, user, notification);
 
-                        Console.WriteLine("\nNotification sent successfully!");
+                        Console.WriteLine("\nnotification sent successfully!");
                         
                         repo.Add(notification);
 
-                        Console.WriteLine("\nDo you want to send another notification or check out the ? (y/n)");
+                        Console.WriteLine("\ndo you want to send another notification or check out the ? (y/n)");
                         string again = Console.ReadLine() ?? "";
 
                         if (again.ToLower() != "y")
@@ -130,18 +130,18 @@ namespace NotificationApp
                         // looping through each item 
                         for (int i = 0; i < list.Count; i++)
                         {
-                            Console.WriteLine($"Index {i}: {list[i].Message}");
+                            Console.WriteLine($"index {i}: {list[i].Message}");
                         }
                         break;
                     
                     case 3:
                         // read one
-                        Console.WriteLine("Enter index:");
+                        Console.WriteLine("enter index:");
                         int idx;
 
                         while (!int.TryParse(Console.ReadLine(), out idx))
                         {
-                            Console.WriteLine("Invalid index, try again:");
+                            Console.WriteLine("invalid index, try again:");
                         }
 
                         var item = repo.GetByIndex(idx);
@@ -152,22 +152,22 @@ namespace NotificationApp
                         }
                         else
                         {
-                            Console.WriteLine("Not found");
+                            Console.WriteLine("not found");
                         }
 
                         break;
                     
                     case 4:
                         //update
-                        Console.WriteLine("Enter index:");
+                        Console.WriteLine("enter index:");
                         int uidx;
 
                         while (!int.TryParse(Console.ReadLine(), out uidx))
                         {
-                            Console.WriteLine("Enter a valid number:");
+                            Console.WriteLine("enter a valid number:");
                         }
 
-                        Console.WriteLine("Enter new message:");
+                        Console.WriteLine("enter new message:");
                         string newMsg = Console.ReadLine() ?? "";
 
                         // creating new object instead of modifying existing
@@ -181,14 +181,14 @@ namespace NotificationApp
                     
                     case 5:
                         // delete
-                        Console.WriteLine("Enter index:");
+                        Console.WriteLine("enter index:");
                         int didx;
                         while (!int.TryParse(Console.ReadLine(), out didx))
                         {
-                            Console.WriteLine("Invalid input, enter a number:");
+                            Console.WriteLine("invalid input, enter a number:");
                         }
                         repo.Delete(didx);
-                        Console.WriteLine("Valid index - deleted sucessfully");
+                        Console.WriteLine("valid index - deleted sucessfully");
                         break;
 
                     case 6:
@@ -197,7 +197,7 @@ namespace NotificationApp
                         break;
                     
                     default:
-                        Console.WriteLine("Invalid option");
+                        Console.WriteLine("invalid option");
                         break;
                 }
             }
