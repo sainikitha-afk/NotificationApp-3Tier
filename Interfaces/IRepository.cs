@@ -2,22 +2,23 @@ using NotificationApp.Models;
 
 namespace NotificationApp.Interfaces
 {
-    // basic contract for notification storage
+    // repository that manages notifications
+    // CRUD operations for notification storage
     internal interface IRepository
     {
-        // just adds a new notification to the list
-        void Add(Notification notification);
+        // adds a new notification to the repository.
+        public void Add(Notification note);
 
-        // returns everything 
-        List<Notification> GetAll();
+        // retrieves all notifications from the repository.
+        public List<Notification> GetAll();
 
-        // trying to fetch using index 
-        Notification? GetByIndex(int index);
+        // retrieves a notification by its index.
+        public Notification? GetByIndex(int idx); // if index is not found, should return null
 
-        // replace existing item
-        void Update(int index, Notification notification);
+        // updates an existing notification at the specified index.
+        public void Update(int idx, Notification note);
 
-        // remove based on index
-        void Delete(int index);
+        // deletes a notification at the specified index.
+        public void Delete(int idx);
     }
 }
