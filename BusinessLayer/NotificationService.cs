@@ -34,19 +34,23 @@ namespace NotificationApp.BusinessLayer
 
             var sender = GetSender(mode) ?? throw new NotificationValidationException("Unsupported notification type.");
             notification.SentDate = DateTime.Now;
+            notification.NotType = mode;
 
             var storedUser = repo.GetUser(user.Email, user.Phone);
+
             if (storedUser == null)
             {
                 repo.AddUser(user);
-                storedUser = user;
+
+                storedUser =
+                    repo.GetUser(user.Email, user.Phone);
             }
 
-            notification.Sender = storedUser;
+            notification.Sender = storedUser!;
 
             try
             {
-                sender.Send(storedUser, notification);
+                sender.Send(storedUser!, notification);
                 repo.Add(notification);
                 return true;
             }

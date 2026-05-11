@@ -1,118 +1,147 @@
 # NotificationApp - 3-Tier Notification System
 
-This C# console application demonstrates a simple notification system built using a 3-tier architecture.
+This C# console application demonstrates a notification management system built using a layered 3-tier architecture with PostgreSQL database connectivity using ADO.NET. The application supports sending notifications through multiple channels, storing notification history in a PostgreSQL database, and performing CRUD operations through a menu-driven console interface.
 
-## Folder Structure
+---
 
-```
+## 📂 Folder Structure
+
+```text
 NotificationApp
 │
 ├── BusinessLayer
 │   ├── NotificationService.cs
-|   └── NotificationExceptions.cs
+│   └── NotificationExceptions.cs
+│
 ├── DataAccessLayer
 │   └── NotificationRepository.cs
+│
 ├── Interfaces
 │   ├── INotificationSender.cs
 │   └── IRepository.cs
+│
 ├── Models
 │   ├── Notification.cs
 │   └── User.cs
+│
 ├── NotificationSenders
 │   ├── EmailNotificationSender.cs
 │   └── SmsNotificationSender.cs
+│
 └── Program.cs
 ```
 
-## Concepts Demonstrated
+---
 
-- 3-Tier Architecture: Presentation, Business, Data Access
-- Interfaces and polymorphism
-- Encapsulation through model classes
-- Business logic validation in the service layer
-- Interaction between layers
-- Collection usage with `List<T>`
-- LINQ (`All()` method for phone validation)
-- CRUD Operations
-- Custom Exception Handling
-- Separation of Concerns
+## 🛠 Technologies Used
 
-## File Responsibilities
+*   **C# .NET** Console Application
+*   **PostgreSQL** Database
+*   **ADO.NET** (Npgsql Package)
 
-- `Program.cs`: User interaction, menu flow, and presentation logic.
-- `BusinessLayer/NotificationService.cs`: Validates user and message input, applies notification rules, chooses the correct sender, and saves notification details.
-- `DataAccessLayer/NotificationRepository.cs`: Stores sent notifications in memory and returns sent notification records.
-- `Interfaces/INotificationSender.cs`: Defines the contract for all notification sender implementations.
-- `Interfaces/IRepository.cs`: Defines the data access contract for notification storage.
-- `Models/User.cs`: Represents customer details and validation helpers.
-- `Models/Notification.cs`: Represents a sent notification and audit formatting.
-- `NotificationSenders/EmailNotificationSender.cs`: Sends notifications through the email channel.
-- `NotificationSenders/SmsNotificationSender.cs`: Sends notifications through the SMS channel.
-- `BusinessLayer/NotificationExceptions.cs`: Contains custom exceptions used for validation and notification processing failures.
+---
 
-## Run
+## 💡 Concepts Demonstrated
 
-```bash
-dotnet run
+*   **3-Tier Architecture:** Presentation Layer, Business Layer, and Data Access Layer.
+*   **PostgreSQL Connectivity:** Using ADO.NET for database operations.
+*   **Interfaces & Polymorphism:** Decoupled notification sending logic.
+*   **Repository Pattern:** Abstracting data access logic.
+*   **Business Logic Validation:** Centralized rules and custom exception handling.
+*   **LINQ:** Used for data validation and collection processing.
+*   **Separation of Concerns:** Distinct responsibilities for each project layer.
+
+---
+
+## 🗄 Database Schema
+
+### Users Table
+```sql
+CREATE TABLE IF NOT EXISTS users (
+    user_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(150),
+    phone VARCHAR(20)
+);
 ```
 
-## Application Flow
-
-1. User enters details through the console menu.
-2. `Program.cs` sends data to the Business Layer.
-3. `NotificationService` validates user and notification data.
-4. Business rules are applied based on notification type.
-5. Appropriate sender object is selected using polymorphism.
-6. Notification is sent using Email or SMS sender.
-7. Notification details are stored using the repository layer.
-8. Stored notifications can later be viewed, updated, or deleted.
-
-## Exception Handling
-
-Custom exceptions are used to separate:
-
-- Validation failures (`NotificationValidationException`)
-- Processing/system failures (`NotificationProcessException`)
-
-This improves error handling clarity and keeps business validation centralized inside the Business Layer.
-
-## LINQ Usage
-
-The project uses LINQ methods for validation logic.
-
-Example:
-- `All()` method used to verify that all phone number characters are digits.
-
-## Features
-
-- Send notifications using Email or SMS
-- CRUD operations for notifications
-- Notification history storage
-- Business rule validation
-- Console-based menu system
-- Layered architecture implementation
-- Custom exception handling
-
-## Output Screenshots
-
-### Email Notification
-
-![Email Notification](op-ss/email-send.png)
+### Notifications Table
+```sql
+CREATE TABLE IF NOT EXISTS notifications (
+    notification_id SERIAL PRIMARY KEY,
+    message TEXT NOT NULL,
+    sent_date TIMESTAMP,
+    notification_type VARCHAR(20),
+    user_id INT REFERENCES users(user_id)
+);
+```
 
 ---
 
-### SMS Notification
+## 📄 File Responsibilities
 
-![SMS Notification](op-ss/msg-send.png)
+*   **Program.cs:** Handles the console menu, user interaction, and navigation flow.
+*   **NotificationService.cs:** Implements business rules, validation, and sender selection.
+*   **NotificationRepository.cs:** Manages SQL queries and PostgreSQL CRUD operations.
+*   **INotificationSender.cs:** Interface for Email and SMS sending logic (Polymorphism).
+*   **IRepository.cs:** Defines the contract for data persistence.
+*   **Models (User/Notification):** Data structures with built-in formatting and validation helpers.
+*   **NotificationExceptions.cs:** Custom exceptions for validation and processing failures.
 
 ---
 
-### View Notifications
+## 🚀 Application Flow
 
-![View Notifications](op-ss/view.png)
+1.  **Selection:** User selects an action from the console menu.
+2.  **Input:** User enters notification details and recipient information.
+3.  **Validation:** `NotificationService.cs` validates inputs against business rules.
+4.  **Processing:** The system selects the appropriate sender (Email/SMS) via polymorphism.
+5.  **Persistence:** Data is saved to the PostgreSQL database using the Repository.
+6.  **Management:** Users can later View, Update, or Delete notification records.
 
 ---
 
-### Delete Notification
+## ✅ Validation Rules
 
-![Delete Notification](op-ss/delete.png)
+### Email Notifications
+*   Email must contain `@` and `.`
+*   Message cannot exceed 1000 characters.
+
+### SMS Notifications
+*   Phone number must contain exactly 10 digits.
+*   Message cannot exceed 160 characters.
+
+### Common Rules
+*   User name cannot be empty.
+*   Notification message cannot be blank.
+
+---
+
+## 🖥 How to Run
+
+1. Ensure you have a **PostgreSQL** instance running.
+2. Update the connection string in `NotificationRepository.cs`.
+3. Open your terminal in the project root.
+4. Run the following command:
+   ```bash
+   dotnet run
+   ```
+
+---
+
+## ## Output Screenshots
+
+### 1. Send Notification
+![Send Notification](op-ss/send.png)
+
+### 2. View All and by IndexNotifications
+![View](op-ss/view.png)
+
+### 3. View users and Update
+![Update and View all users](op-ss/viewusers-update.png)
+
+### 4. Delete Notification
+![Delete](op-ss/delete.png)
+
+### 6. Validation cases
+![Validating some test cases](op-ss/validation.png)

@@ -6,17 +6,19 @@ namespace NotificationApp.Models
     // contains the message content and the date it was sent
     internal class Notification
     {
-        // gets or sets the message content of the notification
+        public int NotId { get; set; }
+
+        // notification type
+        public string NotType { get; set; } = string.Empty;
+
+        // notification message
         public string Message { get; set; } = string.Empty;
 
-        // gets or sets the date and time when the notification was sent
+        // sent time
         public DateTime SentDate { get; set; }
 
-        // gets or sets the user who sent or received the notification
-        public User Sender { get; set; } = new();
-
-        // gets a formatted audit line for logging purposes
-        // includes the sent date, sender info, and message
+        // sender details
+        public User Sender { get; set; } = new User();
         public string GetAuditLine()
         {
             return $"[{SentDate:dd-MM-yyyy hh:mm tt}] {Sender.GetShortInfo()} | {Message}";

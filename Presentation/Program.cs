@@ -107,7 +107,7 @@ namespace NotificationApp
 
             for (var i = 0; i < all.Count; i++)
             {
-                Console.WriteLine($"Index {i} : {all[i].GetAuditLine()}");
+                Console.WriteLine($"Notification ID {all[i].NotId} : {all[i].GetAuditLine()}");
             }
         }
 
@@ -122,7 +122,7 @@ namespace NotificationApp
 
             for (var i = 0; i < users.Count; i++)
             {
-                Console.WriteLine($"User {i} : {users[i].GetShortInfo()}");
+                Console.WriteLine($"User ID {users[i].UserId} : {users[i].GetShortInfo()}");
             }
         }
 
