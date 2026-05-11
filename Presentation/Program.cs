@@ -21,7 +21,8 @@ namespace NotificationApp
                 Console.WriteLine("3. View notification by index");
                 Console.WriteLine("4. Update notification");
                 Console.WriteLine("5. Delete notification");
-                Console.WriteLine("6. Exit");
+                Console.WriteLine("6. View all users");
+                Console.WriteLine("7. Exit");
 
                 var input = Console.ReadLine();
                 if (!int.TryParse(input, out var choice))
@@ -53,6 +54,10 @@ namespace NotificationApp
                         break;
 
                     case 6:
+                        DisplayAllUsers(repository);
+                        break;
+
+                    case 7:
                         running = false;
                         Console.WriteLine("Application closed.");
                         break;
@@ -103,6 +108,21 @@ namespace NotificationApp
             for (var i = 0; i < all.Count; i++)
             {
                 Console.WriteLine($"Index {i} : {all[i].GetAuditLine()}");
+            }
+        }
+
+        private static void DisplayAllUsers(IRepository repository)
+        {
+            var users = repository.GetAllUsers();
+            if (users.Count == 0)
+            {
+                Console.WriteLine("No users stored.");
+                return;
+            }
+
+            for (var i = 0; i < users.Count; i++)
+            {
+                Console.WriteLine($"User {i} : {users[i].GetShortInfo()}");
             }
         }
 

@@ -20,5 +20,14 @@ namespace NotificationApp.Interfaces
 
         // deletes a notification at the specified index.
         public void Delete(int idx);
+
+        // adds a new user to the repository.
+        public void AddUser(User user);
+
+        // retrieves all users from the repository.
+        public List<User> GetAllUsers();
+
+        // retrieves a user by contact details.
+        public User? GetUser(string email, string phone);
     }
 }

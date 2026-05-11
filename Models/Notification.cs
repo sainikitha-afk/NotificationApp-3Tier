@@ -12,11 +12,14 @@ namespace NotificationApp.Models
         // gets or sets the date and time when the notification was sent
         public DateTime SentDate { get; set; }
 
+        // gets or sets the user who sent or received the notification
+        public User Sender { get; set; } = new();
+
         // gets a formatted audit line for logging purposes
-        // includes the sent date and message
+        // includes the sent date, sender info, and message
         public string GetAuditLine()
         {
-            return $"[{SentDate:dd-MM-yyyy hh:mm tt}] {Message}";
+            return $"[{SentDate:dd-MM-yyyy hh:mm tt}] {Sender.GetShortInfo()} | {Message}";
         }
 
         // checks if the notification has any content

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using NotificationApp.Interfaces;
 using NotificationApp.Models;
 
@@ -7,6 +8,7 @@ namespace NotificationApp.DataAccessLayer
     internal class NotificationRepository : IRepository
     {
         private readonly List<Notification> _sent = new();
+        private readonly List<User> _users = new();
 
         public void Add(Notification note)
         {
@@ -42,6 +44,29 @@ namespace NotificationApp.DataAccessLayer
             }
 
             _sent.RemoveAt(idx);
+        }
+
+        public void AddUser(User user)
+        {
+            ArgumentNullException.ThrowIfNull(user);
+            _users.Add(user);
+        }
+
+        public List<User> GetAllUsers()
+        {
+            return new List<User>(_users);
+        }
+
+        public User? GetUser(string email, string phone)
+        {
+            var normalizedEmail = email?.Trim().ToLowerInvariant() ?? string.Empty;
+            var normalizedPhone = phone?.Replace(" ", "").Trim() ?? string.Empty;
+
+            return _users.FirstOrDefault(user =>
+                (!string.IsNullOrEmpty(normalizedEmail) &&
+                    user.Email.Trim().ToLowerInvariant() == normalizedEmail)
+                || (!string.IsNullOrEmpty(normalizedPhone) &&
+                    user.Phone.Replace(" ", "").Trim() == normalizedPhone));
         }
     }
 }
