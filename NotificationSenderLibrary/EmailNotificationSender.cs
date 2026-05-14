@@ -1,10 +1,9 @@
-using System;
-using NotificationApp.Interfaces;
-using NotificationApp.Models;
+using NotificationModelLibrary;
+using NotificationSenderLibrary.Interfaces;
 
-namespace NotificationApp.NotificationSenders
+namespace NotificationSenderLibrary
 {
-    internal class EmailNotificationSender : INotificationSender
+    public class EmailNotificationSender : INotificationSender
     {
         public void Send(User user, Notification notification)
         {
@@ -15,10 +14,15 @@ namespace NotificationApp.NotificationSenders
             Console.WriteLine(" EMAIL NOTIFICATION ");
             Console.WriteLine($"To      : {user.Email}");
             Console.WriteLine($"Name    : {user.Name}");
+
             Console.WriteLine("################################");
+
             Console.WriteLine(notification.Message);
+
             Console.WriteLine("################################");
+
             Console.WriteLine($"Sent At : {notification.SentDate:dd MMM yyyy hh:mm tt}");
+
             Console.WriteLine();
         }
     }

@@ -1,8 +1,6 @@
-using System;
-
-namespace NotificationApp.BusinessLayer
+namespace NotificationBLLibrary.Exceptions
 {
-    internal class NotificationValidationException : Exception
+    public class NotificationValidationException : Exception
     {
         public NotificationValidationException(string message)
             : base(message)
@@ -10,7 +8,7 @@ namespace NotificationApp.BusinessLayer
         }
     }
 
-    internal class NotificationProcessException : Exception
+    public class NotificationProcessException : Exception
     {
         public NotificationProcessException(string message, Exception innerException)
             : base(message, innerException)

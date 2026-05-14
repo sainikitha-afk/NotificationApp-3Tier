@@ -1,133 +1,167 @@
-# NotificationApp - 3-Tier Notification System
+# NotificationApp - EF Core Notification Management System
 
-This C# console application demonstrates a notification management system built using a layered 3-tier architecture with PostgreSQL database connectivity using ADO.NET. The application supports sending notifications through multiple channels, storing notification history in a PostgreSQL database, and performing CRUD operations through a menu-driven console interface.
+A C# console application demonstrating a notification management system built with a 3-tier architecture, PostgreSQL integration, Entity Framework Core, and Fluent API configuration. It supports dynamic notification routing (Email/SMS), input validation, history tracking, and full CRUD operations.
 
 ---
 
-## 📂 Folder Structure
+## Folder Structure
 
 ```text
-NotificationApp
+NotificationApp-3Tier/
 │
-├── BusinessLayer
-│   ├── NotificationService.cs
-│   └── NotificationExceptions.cs
+├── NotificationBLLibrary/
+│   ├── Exceptions/
+│   │   └── NotificationExceptions.cs
+│   ├── Interfaces/
+│   │   └── INotificationService.cs
+│   └── Services/
+│       └── NotificationService.cs
 │
-├── DataAccessLayer
-│   └── NotificationRepository.cs
+├── NotificationDALLibrary/
+│   ├── Contexts/
+│   │   └── NotificationContext.cs
+│   ├── Interfaces/
+│   │   └── IRepository.cs
+│   ├── Repositories/
+│   │   ├── AbstractRepository.cs
+│   │   ├── NotificationRepository.cs
+│   │   └── UserRepository.cs
+│   └── Migrations/
 │
-├── Interfaces
-│   ├── INotificationSender.cs
-│   └── IRepository.cs
+├── NotificationFEApplication/
+│   └── Program.cs
 │
-├── Models
+├── NotificationModelLibrary/
 │   ├── Notification.cs
-│   └── User.cs
+│   ├── NotificationPartial.cs
+│   ├── User.cs
+│   └── UserPartial.cs
 │
-├── NotificationSenders
-│   ├── EmailNotificationSender.cs
-│   └── SmsNotificationSender.cs
-│
-└── Program.cs
+└── NotificationSenderLibrary/
+    ├── Interfaces/
+    │   └── INotificationSender.cs
+    ├── EmailNotificationSender.cs
+    └── SmsNotificationSender.cs
 ```
 
 ---
 
-## 🛠 Technologies Used
+## Technologies Used
 
-*   **C# .NET** Console Application
-*   **PostgreSQL** Database
-*   **ADO.NET** (Npgsql Package)
-
----
-
-## 💡 Concepts Demonstrated
-
-*   **3-Tier Architecture:** Presentation Layer, Business Layer, and Data Access Layer.
-*   **PostgreSQL Connectivity:** Using ADO.NET for database operations.
-*   **Interfaces & Polymorphism:** Decoupled notification sending logic.
-*   **Repository Pattern:** Abstracting data access logic.
-*   **Business Logic Validation:** Centralized rules and custom exception handling.
-*   **LINQ:** Used for data validation and collection processing.
-*   **Separation of Concerns:** Distinct responsibilities for each project layer.
+*   **Language:** C# (.NET Console Application)
+*   **Database:** PostgreSQL
+*   **ORM:** Entity Framework Core
+*   **Database Provider:** Npgsql.EntityFrameworkCore.PostgreSQL
+*   **Design Tools:** Fluent API Configuration, EF Core Migrations
 
 ---
 
-## 🗄 Database Schema
+## Concepts Demonstrated
+
+*   **3-Tier Architecture:** Complete separation of Presentation (FE), Business Logic (BLL), and Data Access (DAL) layers.
+*   **Repository Pattern:** Generic `AbstractRepository` subclassed by specialized `NotificationRepository` and `UserRepository`.
+*   **Fluent API Mapping:** Explicit entity constraints, property types, and relationship behaviors bypassing data annotations.
+*   **Runtime Polymorphism:** Dynamic selection of `INotificationSender` implementations (Email/SMS) at runtime.
+*   **Partial Classes:** Separation of auto-generated database entity schemas from domain business logic extension methods.
+
+---
+
+## Database Schema & Relationships
 
 ### Users Table
-```sql
-CREATE TABLE IF NOT EXISTS users (
-    user_id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(150),
-    phone VARCHAR(20)
-);
-```
+
+| Column Name | Data Type | Constraints |
+| :--- | :--- | :--- |
+| `UserId` | Integer | Primary Key, Identity |
+| `Name` | Varchar | Required |
+| `Email` | Varchar | Required |
+| `Phone` | Varchar | Required |
 
 ### Notifications Table
-```sql
-CREATE TABLE IF NOT EXISTS notifications (
-    notification_id SERIAL PRIMARY KEY,
-    message TEXT NOT NULL,
-    sent_date TIMESTAMP,
-    notification_type VARCHAR(20),
-    user_id INT REFERENCES users(user_id)
-);
+
+| Column Name | Data Type | Constraints |
+| :--- | :--- | :--- |
+| `NotId` | Integer | Primary Key, Identity |
+| `Message` | Text | Required |
+| `SentDate` | Timestamp | Required |
+| `NotType` | Varchar | Required |
+| `UserId` | Integer | Foreign Key, Cascade Delete |
+
+### Relationship Mapping
+One **User** can have many **Notifications** (1:M). Configured via Fluent API:
+```csharp
+modelBuilder.Entity<Notification>()
+    .HasOne(n => n.Sender)
+    .WithMany(u => u.Notifications)
+    .HasForeignKey(n => n.UserId)
+    .OnDelete(DeleteBehavior.Cascade);
 ```
 
 ---
 
-## 📄 File Responsibilities
+## File Responsibilities
 
-*   **Program.cs:** Handles the console menu, user interaction, and navigation flow.
-*   **NotificationService.cs:** Implements business rules, validation, and sender selection.
-*   **NotificationRepository.cs:** Manages SQL queries and PostgreSQL CRUD operations.
-*   **INotificationSender.cs:** Interface for Email and SMS sending logic (Polymorphism).
-*   **IRepository.cs:** Defines the contract for data persistence.
-*   **Models (User/Notification):** Data structures with built-in formatting and validation helpers.
-*   **NotificationExceptions.cs:** Custom exceptions for validation and processing failures.
+*   **`NotificationContext.cs`:** Manages database connectivity, underlying `DbSet` tracking, and database schema creation logic.
+*   **`NotificationRepository.cs` / `UserRepository.cs`:** Executes targeted LINQ expressions for advanced search filters and entity persistence.
+*   **`NotificationService.cs`:** Evaluates infrastructure rules, processes transactions, and invokes targeted send engines.
+*   **`NotificationSenderLibrary`:** Standardizes payloads and simulates external dispatch protocols for distinct channels.
+*   **`Program.cs`:** Drives user navigation menus, aggregates keystroke strings, and captures runtime errors.
 
 ---
 
-## 🚀 Application Flow
+## Application Flow
 
-1.  **Selection:** User selects an action from the console menu.
-2.  **Input:** User enters notification details and recipient information.
-3.  **Validation:** `NotificationService.cs` validates inputs against business rules.
-4.  **Processing:** The system selects the appropriate sender (Email/SMS) via polymorphism.
-5.  **Persistence:** Data is saved to the PostgreSQL database using the Repository.
-6.  **Management:** Users can later View, Update, or Delete notification records.
+1. **Input Selection:** User chooses target system notification channel from a console menu layout.
+2. **Identity Evaluation:** System searches for an existing User match or spins up a new identity entry.
+3. **Data Verification:** The BLL assesses parameters against critical messaging rules.
+4. **Dynamic Despatch:** Interface instances shift implementations to execute matching channel behaviors.
+5. **Database Sync:** The execution footprint commits structural state logs back to PostgreSQL via EF Core tracking.
 
 ---
 
-## ✅ Validation Rules
-
-### Email Notifications
-*   Email must contain `@` and `.`
-*   Message cannot exceed 1000 characters.
-
-### SMS Notifications
-*   Phone number must contain exactly 10 digits.
-*   Message cannot exceed 160 characters.
+## Validation Rules
 
 ### Common Rules
-*   User name cannot be empty.
-*   Notification message cannot be blank.
+*   User name value cannot be null or whitespace string characters.
+*   Notification text message payload cannot be completely blank.
+*   Notification channel select mode must explicitly evaluate to `email` or `sms`.
+
+### Email Notifications
+*   Target addresses must contain an explicit `@` character symbol.
+*   Target addresses must resolve with a valid `.` domain separator symbol.
+*   Body text string length cannot exceed `1000` total characters.
+
+### SMS Notifications
+*   Target contact strings must evaluate to exactly `10` digit numbers.
+*   Body text string length cannot exceed `160` total characters.
 
 ---
 
-## 🖥 How to Run
+## EF Core Features Used
 
-1. Ensure you have a **PostgreSQL** instance running.
-2. Update the connection string in `NotificationRepository.cs`.
-3. Open your terminal in the project root.
-4. Run the following command:
+*   **Code First Approach:** Source schema files define the final layout generation.
+*   **Navigation Properties:** Native tracking relationships allow seamless multi-table relational entry point operations.
+*   **Change Tracking:** Automated state evaluation flags entities safely for processing during transactions.
+*   **LINQ Queries:** Type-safe SQL generation abstracts structural database interactions.
+
+---
+
+## How to Run
+
+1. Ensure a **PostgreSQL** database server instance is active.
+2. Update connection context credentials found within your project text file:
+   `NotificationDALLibrary/Contexts/NotificationContext.cs`
+3. Launch a terminal window operating inside the root container directory paths:
    ```bash
-   dotnet run
+   dotnet ef migrations add InitialCreate --project NotificationDALLibrary --startup-project NotificationFEApplication
+   dotnet ef database update --project NotificationDALLibrary --startup-project NotificationFEApplication
    ```
-
+4. Execute application code loops directly via your terminal tools:
+   ```bash
+   dotnet run --project NotificationFEApplication
+   ```
 ---
+
 
 ## ## Output Screenshots
 
@@ -135,13 +169,19 @@ CREATE TABLE IF NOT EXISTS notifications (
 ![Send Notification](op-ss/send.png)
 
 ### 2. View All and by IndexNotifications
-![View](op-ss/view.png)
+![View](op-ss/viewall-byindex.png)
 
-### 3. View users and Update
-![Update and View all users](op-ss/viewusers-update.png)
+### 3. View users
+![View all users](op-ss/viewusers.png)
+
+### 4. Update
+![Update](op-ss/update.png)
 
 ### 4. Delete Notification
 ![Delete](op-ss/delete.png)
 
-### 6. Validation cases
+### 5. Validation cases
 ![Validating some test cases](op-ss/validation.png)
+
+### 6. PostgreSQL Database Tables 
+![Validating some test cases](op-ss/tables.png)
